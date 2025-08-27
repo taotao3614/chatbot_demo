@@ -1,0 +1,61 @@
+{
+  "intents": {
+    "greet": {
+      "patterns": [
+        "hello", "hi", "hey", "good morning", "good afternoon", 
+        "good evening", "how are you", "what's up", "greetings"
+      ],
+      "responses": [
+        "Hello! How can I help you today?",
+        "Hi there! What can I do for you?",
+        "Hello! I'm here to assist you.",
+        "Good day! How may I assist you?"
+      ]
+    },
+    "faq_hours": {
+      "patterns": [
+        "what are your hours", "when are you open", "opening hours",
+        "business hours", "what time do you open", "what time do you close",
+        "are you open", "hours of operation", "when do you work"
+      ],
+      "responses": [
+        "We're open Monday to Friday, 9 AM to 6 PM.",
+        "Our business hours are 9 AM to 6 PM, Monday through Friday.",
+        "You can reach us during business hours: Monday-Friday, 9 AM to 6 PM."
+      ]
+    },
+    "faq_price": {
+      "patterns": [
+        "how much", "price", "cost", "pricing", "rates", "fees",
+        "what does it cost", "how much does it cost", "pricing information",
+        "what are your rates", "how expensive"
+      ],
+      "responses": [
+        "Our pricing varies depending on your needs. Would you like me to connect you with our sales team?",
+        "For detailed pricing information, please contact our sales department.",
+        "I'd be happy to help you with pricing. Could you tell me more about what you're looking for?"
+      ]
+    },
+    "goodbye": {
+      "patterns": [
+        "bye", "goodbye", "see you later", "farewell", "take care",
+        "have a good day", "talk to you later", "see you"
+      ],
+      "responses": [
+        "Goodbye! Have a great day!",
+        "Take care! Feel free to come back anytime.",
+        "See you later! Thanks for chatting with me."
+      ]
+    },
+    "fallback": {
+      "patterns": [],
+      "responses": [
+        "I'm sorry, I didn't understand that. Could you please rephrase?",
+        "I'm not sure how to help with that. Can you try asking in a different way?",
+        "I don't have information about that. Is there something else I can help you with?",
+        "Could you please clarify what you're looking for? I want to make sure I help you properly."
+      ]
+    }
+  },
+  "confidence_threshold": 0.6
+}

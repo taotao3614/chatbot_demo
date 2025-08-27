@@ -1,0 +1,51 @@
+{
+    "casual_patterns": {
+        "greetings": [
+            "hello", "hi", "hey", "good morning", "good afternoon", "good evening",
+            "how are you", "nice to meet you", "what's up", "how do you do",
+            "greetings", "howdy", "hello there", "hi there"
+        ],
+        "farewells": [
+            "goodbye", "bye", "see you", "have a nice day", "take care",
+            "have a great day", "see you later", "farewell", "good bye",
+            "bye bye", "talk to you later", "until next time", "catch you later"
+        ],
+        "testing": [
+            "test", "testing", "ping", "are you there", "are you working",
+            "are you working properly", "are you operational", "test message",
+            "testing testing", "can you hear me", "are you online", "status check",
+            "are you alive", "are you functioning", "system test"
+        ],
+        "pleasantries": [
+            "thank you", "thanks", "appreciate it", "great", "good job",
+            "well done", "nice", "cool", "awesome", "excellent", "perfect",
+            "thanks a lot", "much appreciated", "that's great"
+        ]
+    },
+    "casual_responses": {
+        "greetings": [
+            "Hello! How can I assist you today?",
+            "Hi there! What can I help you with?",
+            "Hey! I'm here to help!",
+            "Good to see you! How may I help?"
+        ],
+        "farewells": [
+            "Goodbye! Have a great day!",
+            "Take care! Feel free to come back if you need anything.",
+            "Bye! Thanks for chatting!",
+            "See you later! Have a wonderful day!"
+        ],
+        "testing": [
+            "Yes, I'm here and working properly!",
+            "I'm operational and ready to help!",
+            "Test successful! How can I assist you?",
+            "All systems go! What can I do for you?"
+        ],
+        "pleasantries": [
+            "You're welcome!",
+            "Glad I could help!",
+            "My pleasure!",
+            "Happy to assist!"
+        ]
+    }
+}

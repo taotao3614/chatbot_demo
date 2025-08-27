@@ -1,0 +1,633 @@
+{
+	"info": {
+		"_postman_id": "chatbot-mvp-collection",
+		"name": "Chatbot MVP API",
+		"description": "Complete API test collection for the Chatbot MVP with real FAQ data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "chatbot-mvp"
+	},
+	"item": [
+		{
+			"name": "Health & Status",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Basic health check endpoint to verify the service is running"
+					},
+					"response": []
+				}
+			],
+			"description": "Health check and system status endpoints"
+		},
+		{
+			"name": "Casual Conversations",
+			"item": [
+				{
+					"name": "Greeting - Hello",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Hello, how are you?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should be classified as casual conversation - expect source: casual"
+					},
+					"response": []
+				},
+				{
+					"name": "Greeting - Good Morning",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Good morning!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should be classified as casual conversation - expect source: casual"
+					},
+					"response": []
+				},
+				{
+					"name": "Testing - Are you working",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Are you working properly?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should be classified as testing conversation - expect source: casual"
+					},
+					"response": []
+				},
+				{
+					"name": "Farewell - Goodbye",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Goodbye, have a great day!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should be classified as farewell conversation - expect source: casual"
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases for casual conversation detection"
+		},
+		{
+			"name": "Account & Registration FAQ",
+			"item": [
+				{
+					"name": "Create Account - Exact Match",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"How can I create an account?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Exact match for account creation FAQ - expect source: faq, high confidence"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account - Similar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"I want to register for a new account\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Similar to account creation FAQ - expect source: faq, good confidence"
+					},
+					"response": []
+				},
+				{
+					"name": "Order Without Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Can I order without creating an account?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should match guest order FAQ - expect source: faq"
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases for account and registration related FAQs"
+		},
+		{
+			"name": "Payment & Orders FAQ",
+			"item": [
+				{
+					"name": "Payment Methods - Exact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"What payment methods do you accept?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Exact match for payment methods FAQ - expect source: faq, high confidence"
+					},
+					"response": []
+				},
+				{
+					"name": "Payment Methods - Similar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"How can I pay for my order?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Similar to payment methods FAQ - expect source: faq"
+					},
+					"response": []
+				},
+				{
+					"name": "Track Order - Exact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"How can I track my order?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Exact match for order tracking FAQ - expect source: faq, high confidence"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Can I cancel my order?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should match order cancellation FAQ - expect source: faq"
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases for payment and order related FAQs"
+		},
+		{
+			"name": "Shipping & Returns FAQ",
+			"item": [
+				{
+					"name": "Shipping Time - Exact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"How long does shipping take?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Exact match for shipping time FAQ - expect source: faq, high confidence"
+					},
+					"response": []
+				},
+				{
+					"name": "Return Policy - Exact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"What is your return policy?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Exact match for return policy FAQ - expect source: faq, high confidence"
+					},
+					"response": []
+				},
+				{
+					"name": "International Shipping",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Do you offer international shipping?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should match international shipping FAQ - expect source: faq"
+					},
+					"response": []
+				},
+				{
+					"name": "Damaged Package",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"What should I do if my package is lost or damaged?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should match damaged package FAQ - expect source: faq"
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases for shipping and returns related FAQs"
+		},
+		{
+			"name": "Customer Support FAQ",
+			"item": [
+				{
+					"name": "Contact Support - Exact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"How can I contact customer support?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Exact match for customer support FAQ - expect source: faq, high confidence"
+					},
+					"response": []
+				},
+				{
+					"name": "Live Chat Support",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Do you offer live chat support?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should match live chat support FAQ - expect source: faq"
+					},
+					"response": []
+				},
+				{
+					"name": "Security Question",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Are my personal and payment details secure?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should match security FAQ - expect source: faq"
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases for customer support related FAQs"
+		},
+		{
+			"name": "Human Handoff Cases",
+			"item": [
+				{
+					"name": "Complex Technical Query",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"Can you explain the detailed technical architecture of your system?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should trigger human handoff - expect source: human, need_human: true"
+					},
+					"response": []
+				},
+				{
+					"name": "Unrelated Query",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"What's the weather like today?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should trigger human handoff - expect source: human, need_human: true"
+					},
+					"response": []
+				},
+				{
+					"name": "Random Text",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"asdfghjkl qwerty random text\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Should trigger human handoff - expect source: human, need_human: true"
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases for human handoff scenarios"
+		},
+		{
+			"name": "Edge Cases",
+			"item": [
+				{
+					"name": "Empty Input",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Test empty input validation - should return friendly error message asking for input"
+					},
+					"response": []
+				},
+				{
+					"name": "Whitespace Only Input",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"   \"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Test whitespace-only input - should return friendly prompt for user input"
+					},
+					"response": []
+				},
+				{
+					"name": "Very Long Input",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_text\": \"This is a very long question about returns and I want to know if I can return a product that I bought last month and it was damaged during shipping but I'm not sure if I still have the receipt and the original packaging might be thrown away already and I'm wondering what your policy is regarding such cases and whether you can help me with this situation because I really need to return this item as it's not working properly and I paid a lot of money for it so please let me know what I should do in this case.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "chat"]
+						},
+						"description": "Test very long input - should still match return policy FAQ"
+					},
+					"response": []
+				}
+			],
+			"description": "Test edge cases and error handling"
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000",
+			"type": "string",
+			"description": "Base URL for the Chatbot MVP API"
+		}
+	]
+}
