@@ -17,30 +17,44 @@ class EmotionAnalyzer:
         """
         Analyze the emotion of the input text.
         Returns: 'positive', 'negative', or 'neutral'
+        Priority: If explicit emotions (positive/negative) exist, ignore neutral words.
         """
+        # Clean and prepare text
         text = text.lower()
+        # Remove punctuation from text for word matching
+        import string
+        cleaned_text = text.translate(str.maketrans('', '', string.punctuation))
+        words = cleaned_text.split()
         
-        # Count matches for each emotion category
-        emotion_scores = {
-            'positive': 0,
-            'negative': 0,
-            'neutral': 0
-        }
+        print(f"Analyzing text: {text}")
+        print(f"Cleaned text: {cleaned_text}")
+        print(f"Words: {words}")
+        print(f"Negative keywords: {self.rules['negative']}")
         
-        # Count word occurrences for each emotion
-        words = text.lower().split()
-        for emotion, keywords in self.rules.items():
-            for keyword in keywords:
-                # 使用精确匹配而不是子字符串匹配
-                if keyword.lower() in words:
-                    emotion_scores[emotion] += 1
-                # 检查词组（包含空格的关键词）
-                elif ' ' in keyword and keyword.lower() in text:
-                    emotion_scores[emotion] += 1
+        # First check for explicit emotions (positive/negative)
+        negative_matches = [keyword for keyword in self.rules['negative'] 
+                          if keyword.lower() in words or 
+                          (' ' in keyword and keyword.lower() in cleaned_text)]
         
-        # If no emotion is detected, return neutral
-        if all(score == 0 for score in emotion_scores.values()):
-            return 'neutral'
+        positive_matches = [keyword for keyword in self.rules['positive']
+                          if keyword.lower() in words or 
+                          (' ' in keyword and keyword.lower() in cleaned_text)]
         
-        # Return the emotion with the highest score
-        return max(emotion_scores.items(), key=lambda x: x[1])[0]
+        print(f"Negative matches found: {negative_matches}")
+        print(f"Positive matches found: {positive_matches}")
+        
+        # If we have explicit emotions, return them (negative takes priority if both exist)
+        if negative_matches:
+            print("Returning negative due to matches:", negative_matches)
+            return 'negative'
+        if positive_matches:
+            print("Returning positive due to matches:", positive_matches)
+            return 'positive'
+            
+        # Only check neutral words if no explicit emotions were found
+        neutral_matches = [keyword for keyword in self.rules['neutral']
+                         if keyword.lower() in words or 
+                         (' ' in keyword and keyword.lower() in cleaned_text)]
+        
+        print(f"Neutral matches found: {neutral_matches}")
+        return 'neutral'

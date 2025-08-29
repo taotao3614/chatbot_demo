@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Analytics Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .kpi-card {
+            @apply bg-white rounded-lg shadow-md p-4;
+        }
+        .kpi-value {
+            @apply text-3xl font-bold text-gray-800;
+        }
+        .kpi-label {
+            @apply text-sm text-gray-600;
+        }
+        .chart-container {
+            @apply bg-white rounded-lg shadow-md p-4 my-4;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Chatbot Analytics Dashboard</h1>
+            <div class="text-sm text-gray-600">
+                <span>Last 7 Days | </span>
+                <span id="refresh-time"></span>
+                <span> | Auto-refresh: 5min</span>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+            <div class="kpi-card">
+                <div class="kpi-value" id="total-messages">-</div>
+                <div class="kpi-label">Total Messages</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="unique-users">-</div>
+                <div class="kpi-label">Unique Users</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="avg-messages">-</div>
+                <div class="kpi-label">Avg Messages/Session</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="negative-ratio">-</div>
+                <div class="kpi-label">Negative Sentiment %</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="high-urgency">-</div>
+                <div class="kpi-label">High Urgency %</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value" id="high-urgency-negative">-</div>
+                <div class="kpi-label">High Urgency & Negative</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- Hourly Heatmap -->
+            <div class="chart-container">
+                <h2 class="text-lg font-semibold mb-4">Message Volume Heatmap</h2>
+                <div id="hourly-heatmap"></div>
+            </div>
+
+            <!-- Daily Trend -->
+            <div class="chart-container">
+                <h2 class="text-lg font-semibold mb-4">Daily Message Trend</h2>
+                <div id="daily-trend"></div>
+            </div>
+
+            <!-- Top Intents -->
+            <div class="chart-container">
+                <h2 class="text-lg font-semibold mb-4">Top Problem Intents</h2>
+                <div id="top-intents"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Refresh data every 5 minutes
+        const REFRESH_INTERVAL = 5 * 60 * 1000;
+
+        // Update refresh time
+        function updateRefreshTime() {
+            const now = new Date();
+            document.getElementById('refresh-time').textContent = 
+                now.toLocaleTimeString();
+        }
+
+        // Fetch and update KPI data
+        async function updateKPIs() {
+            const response = await fetch('/api/kpi');
+            const data = await response.json();
+            
+            document.getElementById('total-messages').textContent = data.total_messages;
+            document.getElementById('unique-users').textContent = data.unique_users;
+            document.getElementById('avg-messages').textContent = data.avg_messages_per_session;
+            document.getElementById('negative-ratio').textContent = data.negative_ratio + '%';
+            document.getElementById('high-urgency').textContent = data.high_urgency_ratio + '%';
+            document.getElementById('high-urgency-negative').textContent = data.high_urgency_negative;
+        }
+
+        // Create hourly heatmap
+        async function updateHeatmap() {
+            const response = await fetch('/api/hourly_heatmap');
+            const data = await response.json();
+            
+            const hours = Object.keys(data);
+            const dates = Object.keys(data[hours[0]]);
+            const values = hours.map(hour => 
+                dates.map(date => data[hour][date])
+            );
+
+            const heatmap = {
+                z: values,
+                x: dates,
+                y: hours,
+                type: 'heatmap',
+                colorscale: 'Viridis'
+            };
+
+            Plotly.newPlot('hourly-heatmap', [heatmap], {
+                margin: { t: 25, r: 0, b: 40, l: 40 }
+            });
+        }
+
+        // Create daily trend chart
+        async function updateDailyTrend() {
+            const response = await fetch('/api/daily_trend');
+            const data = await response.json();
+
+            const traces = [{
+                x: data.map(d => d.date),
+                y: data.map(d => d.total_messages),
+                name: 'Total Messages',
+                type: 'scatter'
+            }, {
+                x: data.map(d => d.date),
+                y: data.map(d => d.negative_messages),
+                name: 'Negative Messages',
+                type: 'scatter'
+            }];
+
+            Plotly.newPlot('daily-trend', traces, {
+                margin: { t: 25, r: 0, b: 40, l: 40 }
+            });
+        }
+
+        // Create top intents chart
+        async function updateTopIntents() {
+            const response = await fetch('/api/top_intents');
+            const data = await response.json();
+
+            const trace = {
+                x: data.map(d => d.count),
+                y: data.map(d => d.intent),
+                type: 'bar',
+                orientation: 'h'
+            };
+
+            Plotly.newPlot('top-intents', [trace], {
+                margin: { t: 25, r: 0, b: 40, l: 100 }
+            });
+        }
+
+        // Update all charts
+        async function updateAllCharts() {
+            updateRefreshTime();
+            await Promise.all([
+                updateKPIs(),
+                updateHeatmap(),
+                updateDailyTrend(),
+                updateTopIntents()
+            ]);
+        }
+
+        // Initial load
+        updateAllCharts();
+
+        // Set up auto-refresh
+        setInterval(updateAllCharts, REFRESH_INTERVAL);
+    </script>
+</body>
+</html>

@@ -8,10 +8,11 @@ from . import models
 
 def create_session(db: Session, session_id: str) -> models.Session:
     """Create a new chat session."""
+    now = datetime.now()
     db_session = models.Session(
         session_id=session_id,
-        created_at=datetime.now(),
-        last_activity=datetime.now(),
+        create_time=now,
+        update_time=now,
         status='active'
     )
     db.add(db_session)
@@ -27,7 +28,7 @@ def update_session_activity(db: Session, session_id: str) -> Optional[models.Ses
     """Update session last activity time."""
     db_session = get_session(db, session_id)
     if db_session:
-        db_session.last_activity = datetime.now()
+        db_session.update_time = datetime.now()
         db.commit()
         db.refresh(db_session)
     return db_session
@@ -48,16 +49,18 @@ def create_conversation_turn(
         models.ConversationTurn.session_id == session_id
     ).count() + 1
 
+    now = datetime.now()
     db_turn = models.ConversationTurn(
         session_id=session_id,
-        timestamp=datetime.now(),
         user_input=user_input,
         intent=intent,
         confidence=confidence,
         bot_response=bot_response,
         slots=slots or {},
         turn_number=turn_number,
-        processing_time=processing_time
+        processing_time=processing_time,
+        create_time=now,
+        update_time=now
     )
     db.add(db_turn)
     db.commit()
@@ -87,12 +90,14 @@ def create_user_feedback(
     turn_id: Optional[int] = None
 ) -> models.UserFeedback:
     """Create user feedback."""
+    now = datetime.now()
     db_feedback = models.UserFeedback(
         session_id=session_id,
         turn_id=turn_id,
         feedback_type=feedback_type,
         feedback_text=feedback_text,
-        created_at=datetime.now()
+        create_time=now,
+        update_time=now
     )
     db.add(db_feedback)
     db.commit()
@@ -105,6 +110,7 @@ def update_session_data(db: Session, session_id: str, session_data: dict) -> boo
         db_session = get_session(db, session_id)
         if db_session:
             db_session.session_data = session_data
+            db_session.update_time = datetime.now()
             db.commit()
             return True
         return False
@@ -121,9 +127,9 @@ def get_session_analytics(
     query = db.query(models.SessionAnalytics)
     
     if start_date:
-        query = query.filter(models.SessionAnalytics.date >= start_date)
+        query = query.filter(models.SessionAnalytics.create_time >= start_date)
     if end_date:
-        query = query.filter(models.SessionAnalytics.date <= end_date)
+        query = query.filter(models.SessionAnalytics.create_time <= end_date)
     
     return query.all()
 
@@ -137,9 +143,9 @@ def get_intent_analytics(
     query = db.query(models.IntentAnalytics)
     
     if start_date:
-        query = query.filter(models.IntentAnalytics.date >= start_date)
+        query = query.filter(models.IntentAnalytics.create_time >= start_date)
     if end_date:
-        query = query.filter(models.IntentAnalytics.date <= end_date)
+        query = query.filter(models.IntentAnalytics.create_time <= end_date)
     if intent:
         query = query.filter(models.IntentAnalytics.intent == intent)
     
@@ -150,7 +156,7 @@ def close_session(db: Session, session_id: str) -> Optional[models.Session]:
     db_session = get_session(db, session_id)
     if db_session:
         db_session.status = 'closed'
-        db_session.last_activity = datetime.now()
+        db_session.update_time = datetime.now()
         db.commit()
         db.refresh(db_session)
     return db_session

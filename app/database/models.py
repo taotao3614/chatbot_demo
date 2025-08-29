@@ -16,19 +16,19 @@ class Session(Base):
     __tablename__ = "sessions"
 
     session_id = Column(String(36), primary_key=True)
-    created_at = Column(DateTime, nullable=False, default=func.now())
-    last_activity = Column(
-        DateTime, 
-        nullable=False, 
-        default=func.now(),
-        onupdate=func.now()
-    )
     status = Column(
         Enum('active', 'expired', 'closed', name='session_status'),
         nullable=False,
         default='active'
     )
-    session_data = Column(JSON)  # 改名为 session_data
+    session_data = Column(JSON)
+    create_time = Column(DateTime, nullable=False, default=func.now())
+    update_time = Column(
+        DateTime, 
+        nullable=False, 
+        default=func.now(),
+        onupdate=func.now()
+    )
 
     # Relationships
     turns = relationship("ConversationTurn", back_populates="session")
@@ -38,8 +38,8 @@ class Session(Base):
         """Convert session to dictionary."""
         return {
             "session_id": self.session_id,
-            "created_at": self.created_at.isoformat(),
-            "last_activity": self.last_activity.isoformat(),
+            "create_time": self.create_time.isoformat(),
+            "update_time": self.update_time.isoformat(),
             "status": self.status,
             "session_data": self.session_data or {}
         }
@@ -51,7 +51,6 @@ class ConversationTurn(Base):
 
     turn_id = Column(BigInteger, primary_key=True, autoincrement=True)
     session_id = Column(String(36), ForeignKey("sessions.session_id"), nullable=False)
-    timestamp = Column(DateTime, nullable=False, default=func.now())
     user_input = Column(Text, nullable=False)
     intent = Column(String(50), nullable=False)
     confidence = Column(Float, nullable=False)
@@ -59,6 +58,10 @@ class ConversationTurn(Base):
     slots = Column(JSON)
     turn_number = Column(Integer, nullable=False)
     processing_time = Column(Integer)  # in milliseconds
+    emotion = Column(Enum('positive', 'negative', 'neutral', name='emotion_type'), nullable=False, default='neutral')
+    urgency = Column(Enum('high', 'medium', 'low', name='urgency_level'), nullable=False, default='low')
+    create_time = Column(DateTime, nullable=False, default=func.now())
+    update_time = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
     # Relationships
     session = relationship("Session", back_populates="turns")
@@ -69,14 +72,16 @@ class ConversationTurn(Base):
         return {
             "turn_id": self.turn_id,
             "session_id": self.session_id,
-            "timestamp": self.timestamp.isoformat(),
+            "create_time": self.create_time.isoformat(),
             "user_input": self.user_input,
             "intent": self.intent,
             "confidence": self.confidence,
             "bot_response": self.bot_response,
             "slots": self.slots or {},
             "turn_number": self.turn_number,
-            "processing_time": self.processing_time
+            "processing_time": self.processing_time,
+            "emotion": self.emotion,
+            "urgency": self.urgency
         }
 
 
@@ -86,16 +91,17 @@ class IntentAnalytics(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     intent = Column(String(50), nullable=False)
-    date = Column(DateTime, nullable=False)
     total_occurrences = Column(Integer, nullable=False, default=0)
     avg_confidence = Column(Float, nullable=False, default=0.0)
     success_rate = Column(Float, nullable=False, default=0.0)
+    create_time = Column(DateTime, nullable=False, default=func.now())
+    update_time = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert analytics to dictionary."""
         return {
             "intent": self.intent,
-            "date": self.date.isoformat(),
+            "create_time": self.create_time.isoformat(),
             "total_occurrences": self.total_occurrences,
             "avg_confidence": self.avg_confidence,
             "success_rate": self.success_rate
@@ -107,15 +113,16 @@ class SessionAnalytics(Base):
     __tablename__ = "session_analytics"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    date = Column(DateTime, nullable=False)
     total_sessions = Column(Integer, nullable=False, default=0)
     avg_turns_per_session = Column(Float, nullable=False, default=0.0)
     avg_session_duration = Column(Integer, nullable=False, default=0)  # in seconds
+    create_time = Column(DateTime, nullable=False, default=func.now())
+    update_time = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert analytics to dictionary."""
         return {
-            "date": self.date.isoformat(),
+            "create_time": self.create_time.isoformat(),
             "total_sessions": self.total_sessions,
             "avg_turns_per_session": self.avg_turns_per_session,
             "avg_session_duration": self.avg_session_duration

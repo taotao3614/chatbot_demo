@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ConversationTurn:
     """Represents a single conversation turn."""
-    timestamp: datetime
+    create_time: datetime
     user_input: str
     intent: str
     confidence: float
@@ -31,8 +31,8 @@ class ConversationTurn:
 class SessionState:
     """Represents a user session state."""
     session_id: str
-    created_at: datetime
-    last_activity: datetime
+    create_time: datetime
+    update_time: datetime
     turns: List[ConversationTurn] = field(default_factory=list)
     context: Dict[str, Any] = field(default_factory=dict)
     
@@ -40,7 +40,7 @@ class SessionState:
                  bot_response: str, slots: Dict[str, Any] = None):
         """Add a new conversation turn."""
         turn = ConversationTurn(
-            timestamp=datetime.now(),
+            create_time=datetime.now(),
             user_input=user_input,
             intent=intent,
             confidence=confidence,
@@ -49,7 +49,7 @@ class SessionState:
         )
         
         self.turns.append(turn)
-        self.last_activity = datetime.now()
+        self.update_time = datetime.now()
         
         # Keep only recent turns (configurable)
         if len(self.turns) > settings.max_session_turns:
@@ -61,7 +61,7 @@ class SessionState:
     
     def is_expired(self) -> bool:
         """Check if session has expired."""
-        expiry_time = self.last_activity + timedelta(minutes=settings.session_ttl_minutes)
+        expiry_time = self.update_time + timedelta(minutes=settings.session_ttl_minutes)
         return datetime.now() > expiry_time
 
 
@@ -99,7 +99,7 @@ class SessionManager:
             
         # Convert database session to SessionState
         now = datetime.now()
-        if (now - db_session.last_activity).total_seconds() > settings.session_ttl_minutes * 60:
+        if (now - db_session.update_time).total_seconds() > settings.session_ttl_minutes * 60:
             db_session.status = 'expired'
             self._db.commit()
             return None
@@ -110,15 +110,15 @@ class SessionManager:
         # Create SessionState from database data
         session_state = SessionState(
             session_id=db_session.session_id,
-            created_at=db_session.created_at,
-            last_activity=db_session.last_activity
+            create_time=db_session.create_time,
+            update_time=db_session.update_time
         )
         
         # Add turns
         for db_turn in db_turns:
             session_state.turns.append(
                 ConversationTurn(
-                    timestamp=db_turn.timestamp,
+                    create_time=db_turn.create_time,
                     user_input=db_turn.user_input,
                     intent=db_turn.intent,
                     confidence=db_turn.confidence,
@@ -197,7 +197,7 @@ class SessionManager:
         expiry_time = datetime.now() - timedelta(minutes=settings.session_ttl_minutes)
         expired_sessions = self._db.query(models.Session).filter(
             models.Session.status == 'active',
-            models.Session.last_activity < expiry_time
+            models.Session.update_time < expiry_time
         ).all()
         
         for session in expired_sessions:
@@ -234,9 +234,7 @@ class SessionManager:
                 return False
                 
             db_session.status = 'closed'
-            # 如果数据库支持end_reason和end_time字段，可以设置
-            # db_session.end_reason = end_reason
-            # db_session.end_time = datetime.now()
+            db_session.update_time = datetime.now()
             
             self._db.commit()
             logger.info(f"Session {session_id} ended with reason: {end_reason}")
@@ -275,22 +273,6 @@ class SessionManager:
         except Exception as e:
             logger.error(f"Error requesting transfer: {str(e)}")
             return "transfer-error"
-
-
-# Future extensibility classes (commented for MVP)
-class DatabaseSessionManager:
-    """
-    Future: Database-backed session management.
-    Can integrate with SQLAlchemy, MongoDB, etc.
-    """
-    pass
-
-
-class RedisSessionManager:
-    """
-    Future: Redis-backed session management for distributed systems.
-    """
-    pass
 
 
 # Global session manager instance

@@ -17,25 +17,38 @@ class UrgencyAnalyzer:
         """
         Analyze the urgency level of the input text.
         Returns: 'high', 'medium', or 'low'
+        Priority: If multiple urgency levels are found, higher urgency takes precedence.
         """
+        # Clean and prepare text
         text = text.lower()
+        # Remove punctuation from text for better matching
+        import string
+        cleaned_text = text.translate(str.maketrans('', '', string.punctuation))
         
-        # Count matches for each urgency level
-        urgency_scores = {
-            'high': 0,
-            'medium': 0,
-            'low': 0
-        }
+        print(f"Analyzing urgency - Original text: {text}")
+        print(f"Analyzing urgency - Cleaned text: {cleaned_text}")
         
-        # Count phrase occurrences for each urgency level
-        for level, phrases in self.rules.items():
-            for phrase in phrases:
-                if phrase.lower() in text:
-                    urgency_scores[level] += 1
-        
-        # If no urgency indicators are found, return low
-        if all(score == 0 for score in urgency_scores.values()):
+        # First check for high urgency indicators
+        high_matches = [phrase for phrase in self.rules['high']
+                       if phrase.lower() in cleaned_text]
+        if high_matches:
+            print(f"Found high urgency indicators: {high_matches}")
+            return 'high'
+            
+        # Then check for medium urgency
+        medium_matches = [phrase for phrase in self.rules['medium']
+                         if phrase.lower() in cleaned_text]
+        if medium_matches:
+            print(f"Found medium urgency indicators: {medium_matches}")
+            return 'medium'
+            
+        # Finally check for low urgency
+        low_matches = [phrase for phrase in self.rules['low']
+                      if phrase.lower() in cleaned_text]
+        if low_matches:
+            print(f"Found low urgency indicators: {low_matches}")
             return 'low'
-        
-        # Return the urgency level with the highest score
-        return max(urgency_scores.items(), key=lambda x: x[1])[0]
+            
+        # If no urgency indicators are found, return low
+        print("No urgency indicators found, defaulting to low")
+        return 'low'
