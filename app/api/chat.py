@@ -15,6 +15,7 @@ from app.api.models import (
 from app.nlp.intent_classifier import IntentClassifier
 from app.policy.response_policy import ResponsePolicy
 from app.state.session_manager import session_manager
+from analyzers import EmotionAnalyzer, UrgencyAnalyzer
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -23,6 +24,8 @@ logger = logging.getLogger(__name__)
 # Initialize components
 intent_classifier = IntentClassifier()
 response_policy = ResponsePolicy()
+emotion_analyzer = EmotionAnalyzer()
+urgency_analyzer = UrgencyAnalyzer()
 
 # Create router
 router = APIRouter(
@@ -80,6 +83,43 @@ async def chat(request: ChatRequest) -> ChatResponse:
             bot_response=response_data["response"],
             slots=response_data.get("metadata", {})
         )
+        
+        try:
+            # Analyze emotion and urgency
+            emotion = emotion_analyzer.analyze_emotion(request.user_text)
+            urgency = urgency_analyzer.analyze_urgency(request.user_text)
+            
+            # Get database connection
+            from sqlalchemy.orm import Session
+            from app.database.base import get_db
+            
+            # Update the conversation turn with emotion and urgency
+            db: Session = next(get_db())
+            from sqlalchemy import text
+            
+            # Print the values for debugging
+            logger.info(f"Analyzing - Emotion: {emotion}, Urgency: {urgency}, Text: {request.user_text}")
+            
+            update_stmt = text("""
+                UPDATE conversation_turns 
+                SET emotion = :emotion, urgency = :urgency 
+                WHERE session_id = :session_id 
+                AND turn_number = :turn_number
+            """)
+            
+            db.execute(
+                update_stmt,
+                {
+                    "emotion": emotion,
+                    "urgency": urgency,
+                    "session_id": session_id,
+                    "turn_number": current_turn
+                }
+            )
+            db.commit()
+        except Exception as e:
+            # Log the error but don't affect the main flow
+            logger.error(f"Error updating emotion/urgency: {str(e)}")
         
         # Log conversation
         logger.info(

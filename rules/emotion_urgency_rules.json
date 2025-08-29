@@ -1,0 +1,30 @@
+{
+  "emotion_rules": {
+    "positive": [
+      "thank", "thanks", "great", "good", "excellent", "wonderful", "happy",
+      "pleased", "love", "appreciate", "perfect", "awesome", "fantastic"
+    ],
+    "negative": [
+      "bad", "terrible", "awful", "horrible", "angry", "upset", "disappointed",
+      "hate", "wrong", "stupid", "useless", "waste", "poor", "fail"
+    ],
+    "neutral": [
+      "what", "how", "when", "where", "which", "who", "please", "could",
+      "would", "can", "may", "need", "want", "looking", "help"
+    ]
+  },
+  "urgency_rules": {
+    "high": [
+      "immediately", "urgent", "emergency", "asap", "right now", "critical",
+      "crucial", "vital", "emergency", "deadline"
+    ],
+    "medium": [
+      "soon", "important", "needed", "should", "required", "necessary",
+      "priority", "significant"
+    ],
+    "low": [
+      "maybe", "sometime", "when possible", "would like", "consider",
+      "suggest", "think", "wonder", "curious"
+    ]
+  }
+}

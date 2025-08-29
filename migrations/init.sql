@@ -152,6 +152,11 @@ END //
 
 DELIMITER ;
 
+-- 添加情感分析和紧急度字段
+ALTER TABLE conversation_turns
+ADD COLUMN emotion ENUM('positive', 'negative', 'neutral') NOT NULL DEFAULT 'neutral',
+ADD COLUMN urgency ENUM('high', 'medium', 'low') NOT NULL DEFAULT 'low';
+
 -- 添加一些基础的测试数据
 INSERT INTO sessions (session_id, created_at, last_activity, status)
 VALUES ('test-session-1', NOW(), NOW(), 'active');
