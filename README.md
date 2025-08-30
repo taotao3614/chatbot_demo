@@ -175,28 +175,6 @@ GET /metrics
 - [ ] RAG capabilities
 - [ ] Knowledge base expansion
 
-## 📈 Performance & Scaling
-
-### Current Metrics
-- Response Time: < 50ms (95th percentile)
-- Concurrent Users: 2000+
-- Session Storage: Redis + MySQL hybrid
-- Message Processing: 100+ msg/sec
-- Emotion Analysis: < 10ms
-- Dashboard Refresh: 5-minute intervals
-
-### Scaling Strategies
-1. Horizontal scaling via load balancing
-2. Redis for session caching
-3. Database sharding for large deployments
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Add tests for new features
-4. Submit a pull request
-
 ## 📄 License
 
 MIT License - see LICENSE file for details
@@ -372,25 +350,6 @@ GET /metrics
 - [ ] 实时监控
 - [ ] 性能优化
 
-## 📈 性能和扩展
-
-### 当前指标
-- 响应时间：< 100ms（95 百分位）
-- 并发用户：1000+
-- 会话存储：内存/数据库混合
-
-### 扩展策略
-1. 通过负载均衡实现水平扩展
-2. Redis 用于会话缓存
-3. 大型部署的数据库分片
-
-## 🤝 贡献指南
-
-1. Fork 仓库
-2. 创建特性分支
-3. 为新特性添加测试
-4. 提交拉取请求
-
 ## 📄 许可证
 
 MIT 许可证 - 详见 LICENSE 文件
@@ -401,4 +360,5 @@ MIT 许可证 - 详见 LICENSE 文件
 **Last Updated:** 2024
 
 For questions or support, please refer to the project documentation or create an issue.
+
 如有问题或需要支持，请参考项目文档或创建 issue。
